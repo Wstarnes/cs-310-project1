@@ -1,4 +1,4 @@
-package cs310project1;
+package feature1;
 
 import java.sql.*;
 
@@ -82,13 +82,20 @@ public class TASDatabase {
         
         Statement stmt = conn.createStatement();
         ResultSet result = stmt.executeQuery("SELECT * FROM event WHERE id=" + punch_id);
+        Badge b = new Badge();
         
         if(result != null){
             result.next();
-            
+            int term_id = Integer.parseInt(result.getString("terminalid"));
+            int event_id = Integer.parseInt(result.getString("eventtypeid"));
+            String badge_id = result.getString("badgeid");
+            String original_time_stamp = result.getString("originaltimestamp");
+            String event_data = result.getString("eventdata");  
+            String adjusted_time_stamp = result.getString("adjustedtimestamp");
+            b = getBadge(badge_id);
+            return new Punch(b, term_id, event_id);
         }
-        return new Punch(new Badge(),0,0);
-        
+        else
+            return new Punch(b,0,0);
     }
-    
 }
