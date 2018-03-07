@@ -1,4 +1,8 @@
-package feature1;
+package cs310project1;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 
 /*
 
@@ -127,9 +131,19 @@ public class Shift {
         this.over_time_threshold = over_time_threshold;
     }
     
+    //Calculate difference between times and returns in minutes
+    public long calculateDifference(String t1, String t2){
+        
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+        LocalDateTime dateTime1= LocalDateTime.parse(t1, formatter);
+        LocalDateTime dateTime2= LocalDateTime.parse(t2, formatter);
+        
+        return java.time.Duration.between(dateTime1, dateTime2).toMinutes();
+    }
+    
     @Override
-    public String toString(){
-        return description + " " + start + " - " + stop + " ";
+    public String toString(){//Placeholder
+        return description + ": " + start + " - " + stop + "("  + "); " + "Lunch: " + lunch_start + " - " + lunch_stop + "(" + ")";
     }
     
 }

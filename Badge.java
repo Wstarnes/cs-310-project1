@@ -1,4 +1,4 @@
-package feature1;
+package cs310project1;
 
 /*
 
@@ -13,7 +13,7 @@ Creat Employee Class
 
 public class Badge {
     
-    private int badge_id;
+    private String badge_id;
     private String first_name;
     private String middle_name;
     private String last_name; 
@@ -23,7 +23,7 @@ public class Badge {
     private boolean active;
 
     public Badge(){
-        badge_id = 0;
+        badge_id = "";
         first_name = "";
         middle_name = "";
         last_name = "";
@@ -32,11 +32,11 @@ public class Badge {
         shift_id = 0;
     }
     
-    public int getBadge_id() {
+    public String getBadge_id() {
         return badge_id;
     }
 
-    public void setBadge_id(int badge_id) {
+    public void setBadge_id(String badge_id) {
         this.badge_id = badge_id;
     }
 
@@ -98,7 +98,7 @@ public class Badge {
     
     @Override
     public String toString(){
-        return badge_id + " (" + last_name + ", " + first_name + " " + middle_name.charAt(0) + ")";
+        return "#" + badge_id + " (" + last_name + ", " + first_name + " " + middle_name.charAt(0) + ")";
     }
   
 }
