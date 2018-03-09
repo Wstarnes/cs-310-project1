@@ -1,8 +1,8 @@
 package cs310project1;
 
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-
+import java.time.temporal.ChronoUnit;
 
 /*
 
@@ -10,11 +10,6 @@ Contains information from the database about a single shift ruleset
 
 */
 
-/*
-TODO:
-Look into how to store time objects(start,stop,interval,grace_period...etc)
-Finish toString()
-*/
 public class Shift {
     
     private String description;
@@ -134,16 +129,17 @@ public class Shift {
     //Calculate difference between times and returns in minutes
     public long calculateDifference(String t1, String t2){
         
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-        LocalDateTime dateTime1= LocalDateTime.parse(t1, formatter);
-        LocalDateTime dateTime2= LocalDateTime.parse(t2, formatter);
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("HH:mm:ss");
+        LocalTime time1 = LocalTime.parse(t1, format);
+        LocalTime time2 = LocalTime.parse(t2, format);
+        long minutes = ChronoUnit.MINUTES.between(time1, time2);
         
-        return java.time.Duration.between(dateTime1, dateTime2).toMinutes();
+        return minutes;
     }
     
     @Override
-    public String toString(){//Placeholder
-        return description + ": " + start + " - " + stop + "("  + "); " + "Lunch: " + lunch_start + " - " + lunch_stop + "(" + ")";
+    public String toString(){
+        return description + ": " + start.substring(0, start.length() - 3) + " - " + stop.substring(0, stop.length() - 3) + " (" + calculateDifference(start,stop) + " minutes); " + "Lunch: " + lunch_start.substring(0, lunch_start.length() - 3) + " - " + lunch_stop.substring(0, lunch_stop.length() - 3) + " (" + calculateDifference(lunch_start,lunch_stop) + " minutes)";
     }
     
 }

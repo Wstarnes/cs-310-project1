@@ -1,4 +1,4 @@
-package feature1;
+package cs310project1;
 
 import java.sql.*;
 

@@ -7,5 +7,10 @@ public class Punch {
     public Punch(Badge badge, int terminalid, int punchtypeid){
         
     }
+
+    Object printOriginalTimestamp() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
     
 }
