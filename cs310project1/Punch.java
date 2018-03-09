@@ -10,11 +10,6 @@ public class Punch {
     private GregorianCalendar originalTimeStmap;
     private GregorianCalendar adjustedTimeStamp;
 
-    SimpleDateFormat fmt = new SimpleDateFormat("EEE MM/dd/yyyy HH:mm:ss");
-    fmt.setCalendar(originalTimeStamp);
-
-    private String stamp = fmt.format(originalTimeStamp.getTime());
-
     public Punch(Badge badge, int terminalid, int punchtypeid){
         this.badgeid = badge.getBadge_id();
         this.terminalid = terminalid;
@@ -64,6 +59,18 @@ public class Punch {
     }
 
     public String printOriginalTimeStamp{
+        try
+        {
+            SimpleDateFormat fmt = new SimpleDateFormat("EEE MM/dd/yyyy HH:mm:ss");
+            fmt.setCalendar(originalTimeStamp);
+            String stamp = fmt.format(originalTimeStamp.getTime());
+
+        }catch(NullPointerException e){
+            //no data
+        }catch(IllegalArgumentExcepion e){
+            //invalid data type
+        }
+
         switch (punchtypeid){
             case 0:
                 return badgeid + " CLOCKED IN: " + stamp;
