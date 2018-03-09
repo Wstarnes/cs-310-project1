@@ -10,12 +10,17 @@ public class Punch {
     private GregorianCalendar originalTimeStmap;
     private GregorianCalendar adjustedTimeStamp;
 
+    SimpleDateFormat fmt = new SimpleDateFormat("EEE MM/dd/yyyy HH:mm:ss");
+    fmt.setCalendar(originalTimeStmap);
+
+    private String stamp = fmt.format(originalTimeStmap.getTime());
+
     public Punch(Badge badge, int terminalid, int punchtypeid){
-        this.badge = badge.getBadge_id();
+        this.badgeid = badge.getBadge_id();
         this.terminalid = terminalid;
         this.punchtypeid = punchtypeid;
         originalTimeStamp = new GregorianCalendar();
-        adjustedTimeStamp - null;
+        adjustedTimeStamp = null;
     }
 
     public void setBadgeid(Badge badge) {
@@ -50,27 +55,24 @@ public class Punch {
         this.terminalid = terminalid;
     }
 
-    public GregorianCalendar getStamp() {
-        return stamp;
+    public GregorianCalendar getOriginalTimeStamp() {
+        return originalTimeStamp;
+
+    }
+    public void setOriginalTimeStamp(GregorianCalendar stamp) {
+        this.originalTimeStmap = stamp;
     }
 
-    public void setStamp(GregorianCalendar stamp) {
-        this.stamp = stamp;
-    }
-
-    public void printOriginalTimeStamp{
-        SimpleDateFormat fmt = new SimpleDateFormat("EEE MM/dd/yyyy HH:mm:ss");
-        fmt.setCalendar(originalTimeStmap);
-        String stamp = fmt.format(originalTimeStmap.getTime());
+    public String printOriginalTimeStamp{
         switch (punchtypeid){
             case 0:
-                System.out.println(badgeid + " CLOCKED IN: " + stamp);
+                return badgeid + " CLOCKED IN: " + stamp;
                 break;
             case 1:
-                System.out.println(badgeid + " CLODKED OUT: " + stamp);
+                return badgeid + " CLODKED OUT: " + stamp;
                 break;
             case 2:
-                System.out.println(badgeid + " TIMED OUT: " + stamp);
+                return badgeid + " TIMED OUT: " + stamp;
                 break;
             default:
                 break;
