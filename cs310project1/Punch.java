@@ -1,30 +1,79 @@
 package cs310project1;
 
 import java.util.GregorianCalendar;
-import java.util.TimeZone;
 
 public class Punch {
-    private Badge badge;
-    private int punchid;
+    private String badgeid;
     private int terminalid;
     private int punchtypeid;
-    private GregorianCalendar stamp;
+    private int punchid;
+    private GregorianCalendar originalTimeStmap;
+    private GregorianCalendar adjustedTimeStamp;
 
     public Punch(Badge badge, int terminalid, int punchtypeid){
-        this.badge = badge;
+        this.badge = badge.getBadge_id();
         this.terminalid = terminalid;
         this.punchtypeid = punchtypeid;
-        this.stamp = new GregorianCalendar(TimeZone.getDefault());
+        originalTimeStamp = new GregorianCalendar();
+        adjustedTimeStamp - null;
     }
 
-<<<<<<< HEAD
-    public GregorianCalendar printOriginalTimeStampp(){
-        if (punchtypeid == 0)
-=======
-    Object printOriginalTimestamp() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void setBadgeid(Badge badge) {
+        this.badge = badge.getBadge_id();
     }
 
-    
->>>>>>> c1bdee4993c71b52cca6fc64ffa73fbde8a64e42
+    public String getBadgeid() {
+        return badgeid;
+    }
+
+    public int getPunchid() {
+        return punchid;
+    }
+
+    public void setPunchid(int punchid) {
+        this.punchid = punchid;
+    }
+
+    public int getPunchtypeid() {
+        return punchtypeid;
+    }
+
+    public void setPunchtypeid(int punchtypeid) {
+        this.punchtypeid = punchtypeid;
+    }
+
+    public int getTerminalid() {
+        return terminalid;
+    }
+
+    public void setTerminalid(int terminalid) {
+        this.terminalid = terminalid;
+    }
+
+    public GregorianCalendar getStamp() {
+        return stamp;
+    }
+
+    public void setStamp(GregorianCalendar stamp) {
+        this.stamp = stamp;
+    }
+
+    public void printOriginalTimeStamp{
+        SimpleDateFormat fmt = new SimpleDateFormat("EEE MM/dd/yyyy HH:mm:ss");
+        fmt.setCalendar(originalTimeStmap);
+        String stamp = fmt.format(originalTimeStmap.getTime());
+        switch (punchtypeid){
+            case 0:
+                System.out.println(badgeid + " CLOCKED IN: " + stamp);
+                break;
+            case 1:
+                System.out.println(badgeid + " CLODKED OUT: " + stamp);
+                break;
+            case 2:
+                System.out.println(badgeid + " TIMED OUT: " + stamp);
+                break;
+            default:
+                break;
+        }
+    }
 }
