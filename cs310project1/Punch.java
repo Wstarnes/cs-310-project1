@@ -11,9 +11,9 @@ public class Punch {
     private GregorianCalendar adjustedTimeStamp;
 
     SimpleDateFormat fmt = new SimpleDateFormat("EEE MM/dd/yyyy HH:mm:ss");
-    fmt.setCalendar(originalTimeStmap);
+    fmt.setCalendar(originalTimeStamp);
 
-    private String stamp = fmt.format(originalTimeStmap.getTime());
+    private String stamp = fmt.format(originalTimeStamp.getTime());
 
     public Punch(Badge badge, int terminalid, int punchtypeid){
         this.badgeid = badge.getBadge_id();
@@ -60,7 +60,7 @@ public class Punch {
 
     }
     public void setOriginalTimeStamp(GregorianCalendar stamp) {
-        this.originalTimeStmap = stamp;
+        this.originalTimeStamp = stamp;
     }
 
     public String printOriginalTimeStamp{
