@@ -69,7 +69,7 @@ public class Punch {
                 return badgeid + " CLOCKED IN: " + stamp;
                 break;
             case 1:
-                return badgeid + " CLODKED OUT: " + stamp;
+                return badgeid + " CLOCKED OUT: " + stamp;
                 break;
             case 2:
                 return badgeid + " TIMED OUT: " + stamp;
