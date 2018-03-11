@@ -6,11 +6,6 @@ Contains information from the database about a single employee badge
 
 */
 
-/*
-TODO:
-Creat Employee Class
-*/
-
 public class Badge {
     
     private String badge_id;

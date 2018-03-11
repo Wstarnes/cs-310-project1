@@ -1,8 +1,10 @@
 package cs310project1;
-
+import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 /*
 
@@ -13,31 +15,31 @@ Contains information from the database about a single shift ruleset
 public class Shift {
     
     private String description;
-    private String start;
-    private String stop;
-    private String interval;
-    private String grace_period;
+    private GregorianCalendar start;
+    private GregorianCalendar stop;
+    private int interval;
+    private int grace_period;
     private int dock;
-    private String lunch_start;
-    private String lunch_stop;
+    private GregorianCalendar lunch_start;
+    private GregorianCalendar lunch_stop;
     private int lunch_deduct;
     private int max_time;
     private String over_time_threshold;
 
     public Shift() {
         description = "";
-        start = "";
-        stop = "";
-        interval = "";
-        grace_period = "";
+        start = new GregorianCalendar();
+        stop = new GregorianCalendar();
+        interval = 0;
+        grace_period = 0;
         dock = 0;
-        lunch_start = "";
-        lunch_stop = "";
+        lunch_start = new GregorianCalendar();
+        lunch_stop = new GregorianCalendar();
         lunch_deduct = 0;
         max_time = 0;
         over_time_threshold = "";
     }
-    
+
     public String getDescription() {
         return description;
     }
@@ -46,35 +48,35 @@ public class Shift {
         this.description = description;
     }
 
-    public String getStart() {
+    public GregorianCalendar getStart() {
         return start;
     }
 
-    public void setStart(String start) {
-        this.start = start;
+    public void setStart(Date start) {
+        this.start.setTime(start);
     }
 
-    public String getStop() {
+    public GregorianCalendar getStop() {
         return stop;
     }
 
-    public void setStop(String stop) {
-        this.stop = stop;
+    public void setStop(Date stop) {
+        this.stop.setTime(stop);
     }
 
-    public String getInterval() {
+    public int getInterval() {
         return interval;
     }
 
-    public void setInterval(String interval) {
+    public void setInterval(int interval) {
         this.interval = interval;
     }
 
-    public String getGrace_period() {
+    public int getGrace_period() {
         return grace_period;
     }
 
-    public void setGrace_period(String grace_period) {
+    public void setGrace_period(int grace_period) {
         this.grace_period = grace_period;
     }
 
@@ -86,20 +88,20 @@ public class Shift {
         this.dock = dock;
     }
 
-    public String getLunch_start() {
+    public GregorianCalendar getLunch_start() {
         return lunch_start;
     }
 
-    public void setLunch_start(String lunch_start) {
-        this.lunch_start = lunch_start;
+    public void setLunch_start(Date lunch_start) {
+        this.lunch_start.setTime(lunch_start);
     }
 
-    public String getLunch_stop() {
+    public GregorianCalendar getLunch_stop() {
         return lunch_stop;
     }
 
-    public void setLunch_stop(String lunch_stop) {
-        this.lunch_stop = lunch_stop;
+    public void setLunch_stop(Date lunch_stop) {
+        this.lunch_stop.setTime(lunch_stop);
     }
 
     public int getLunch_deduct() {
@@ -139,7 +141,17 @@ public class Shift {
     
     @Override
     public String toString(){
-        return description + ": " + start.substring(0, start.length() - 3) + " - " + stop.substring(0, stop.length() - 3) + " (" + calculateDifference(start,stop) + " minutes); " + "Lunch: " + lunch_start.substring(0, lunch_start.length() - 3) + " - " + lunch_stop.substring(0, lunch_stop.length() - 3) + " (" + calculateDifference(lunch_start,lunch_stop) + " minutes)";
+        
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");  
+        Date start1 = start.getTime();
+        Date stop1 = stop.getTime();
+        Date lunch_start1 = lunch_start.getTime();
+        Date lunch_stop1 = lunch_stop.getTime();
+        
+        long start_stop_diff = (stop1.getTime() - start1.getTime())/(60 * 1000);
+        long lunch_diff = (lunch_stop1.getTime() - lunch_start1.getTime())/(60 * 1000);
+        
+        return description + ": " + sdf.format(start.getTime()) +  " - " + sdf.format(stop.getTime()) + " (" + start_stop_diff +" minutes); Lunch: " + sdf.format(lunch_start.getTime()) + " - " + sdf.format(lunch_stop.getTime()) + " (" + lunch_diff + " minutes)";
     }
     
 }

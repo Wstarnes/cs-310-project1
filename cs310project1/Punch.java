@@ -1,13 +1,16 @@
 package cs310project1;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.GregorianCalendar;
 
 public class Punch {
+    
     private String badgeid;
     private int terminalid;
     private int punchtypeid;
     private int punchid;
-    private GregorianCalendar originalTimeStmap;
+    private GregorianCalendar originalTimeStamp;
     private GregorianCalendar adjustedTimeStamp;
 
     public Punch(Badge badge, int terminalid, int punchtypeid){
@@ -15,31 +18,15 @@ public class Punch {
         this.terminalid = terminalid;
         this.punchtypeid = punchtypeid;
         originalTimeStamp = new GregorianCalendar();
-        adjustedTimeStamp = null;
-    }
-
-    public void setBadgeid(Badge badge) {
-        this.badge = badge.getBadge_id();
+        adjustedTimeStamp = new GregorianCalendar();
     }
 
     public String getBadgeid() {
         return badgeid;
     }
 
-    public int getPunchid() {
-        return punchid;
-    }
-
-    public void setPunchid(int punchid) {
-        this.punchid = punchid;
-    }
-
-    public int getPunchtypeid() {
-        return punchtypeid;
-    }
-
-    public void setPunchtypeid(int punchtypeid) {
-        this.punchtypeid = punchtypeid;
+    public void setBadgeid(String badgeid) {
+        this.badgeid = badgeid;
     }
 
     public int getTerminalid() {
@@ -50,39 +37,54 @@ public class Punch {
         this.terminalid = terminalid;
     }
 
+    public int getPunchtypeid() {
+        return punchtypeid;
+    }
+
+    public void setPunchtypeid(int punchtypeid) {
+        this.punchtypeid = punchtypeid;
+    }
+
+    public int getPunchid() {
+        return punchid;
+    }
+
+    public void setPunchid(int punchid) {
+        this.punchid = punchid;
+    }
+
     public GregorianCalendar getOriginalTimeStamp() {
         return originalTimeStamp;
-
-    }
-    public void setOriginalTimeStamp(GregorianCalendar stamp) {
-        this.originalTimeStamp = stamp;
     }
 
-    public String printOriginalTimeStamp{
-        try
-        {
-            SimpleDateFormat fmt = new SimpleDateFormat("EEE MM/dd/yyyy HH:mm:ss");
-            fmt.setCalendar(originalTimeStamp);
-            String stamp = fmt.format(originalTimeStamp.getTime());
+    public void setOriginalTimeStamp(long originalTimeStamp) {
+        this.originalTimeStamp.setTimeInMillis(originalTimeStamp);
+    }
 
-        }catch(NullPointerException e){
-            //no data
-        }catch(IllegalArgumentExcepion e){
-            //invalid data type
-        }
+    public GregorianCalendar getAdjustedTimeStamp() {
+        return adjustedTimeStamp;
+    }
 
+    public void setAdjustedTimeStamp(GregorianCalendar adjustedTimeStamp) {
+        this.adjustedTimeStamp = adjustedTimeStamp;
+    }
+    
+    public String printOriginalTimestamp(){
+        
+        SimpleDateFormat fmt = new SimpleDateFormat("EEE MM/dd/yyyy HH:mm:ss");
+        fmt.setCalendar(originalTimeStamp);
+        String stamp = fmt.format(originalTimeStamp.getTime()).toUpperCase();
+        
         switch (punchtypeid){
             case 0:
-                return badgeid + " CLOCKED IN: " + stamp;
-                break;
+                return "#" + badgeid + " CLOCKED OUT: " + stamp;
+                
             case 1:
-                return badgeid + " CLOCKED OUT: " + stamp;
-                break;
-            case 2:
-                return badgeid + " TIMED OUT: " + stamp;
-                break;
+                return "#" + badgeid + " CLOCKED IN: " + stamp;
+                 
             default:
-                break;
-        }
+                return "#" + badgeid + " TIMED OUT: " + stamp;
+        }     
     }
+    
 }
