@@ -3,7 +3,10 @@ package cs310project1;
 import java.util.Date;
 import java.sql.*;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.GregorianCalendar;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class TASDatabase {
     
@@ -124,4 +127,61 @@ public class TASDatabase {
         }
         return null;
     }
+    
+    
+    //Inserts a punch object into the database and returns its id in the database
+    public int insertPunch(Punch p){
+        
+        int key = 0, result = 0;
+        String badgeid = p.getBadgeid();
+        GregorianCalendar originaltimestamp = p.getOriginalTimeStamp();
+        int terminalid = p.getTerminalid();
+        int eventtypeid = p.getPunchtypeid();
+        ResultSet keys;
+        String sql = "INSERT INTO event (badgeid, originaltimestamp, terminalid, eventtypeid) VALUES (?,?,?,?)";
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
+            ps.setString(1, badgeid);
+            ps.setString(2, (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(originaltimestamp.getTime()));
+            ps.setInt(3, terminalid);
+            ps.setInt(4, eventtypeid);
+            result = ps.executeUpdate();
+            if (result == 1) {
+                keys = ps.getGeneratedKeys();
+                if (keys.next()) {
+                    key = keys.getInt(1);
+                }
+            }   
+        } catch (SQLException ex) {
+            Logger.getLogger(TASDatabase.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return key;
+    }
+    
+    //Returns all punches by a particular person on a particular day
+    public ArrayList getDailyPunchList(Badge b, GregorianCalendar ts){
+        
+        ArrayList<Punch> punches = new ArrayList<>(); 
+        String badge_id = b.getBadge_id();
+        Date d = ts.getTime();
+        
+        try {
+            Statement stmt = conn.createStatement();
+            ResultSet result = stmt.executeQuery("SELECT * FROM event WHERE id=" + badge_id);
+            
+            while(result != null){
+                result.next();
+                int term_id = Integer.parseInt(result.getString("terminalid"));
+                int event_id = Integer.parseInt(result.getString("eventtypeid"));
+                
+                Punch p = new Punch(new Badge(badge_id),term_id,event_id);
+                punches.add(p);
+            }
+            
+        } catch (Exception e) {
+            System.err.println(e);
+        }
+        return punches;
+    } 
+    
 }

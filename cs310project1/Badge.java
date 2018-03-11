@@ -27,6 +27,16 @@ public class Badge {
         shift_id = 0;
     }
     
+    public Badge(String badge_id){
+        this.badge_id = badge_id;
+        first_name = "";
+        middle_name = "";
+        last_name = "";
+        employee_type_id = 0;
+        department_id = 0;
+        shift_id = 0;
+    }   
+    
     public String getBadge_id() {
         return badge_id;
     }

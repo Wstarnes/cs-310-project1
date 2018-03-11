@@ -20,6 +20,14 @@ public class Punch {
         originalTimeStamp = new GregorianCalendar();
         adjustedTimeStamp = new GregorianCalendar();
     }
+    
+    public Punch(String badge_id, int terminalid, int punchtypeid){
+        this.badgeid = badge_id;
+        this.terminalid = terminalid;
+        this.punchtypeid = punchtypeid;
+        originalTimeStamp = new GregorianCalendar();
+        adjustedTimeStamp = new GregorianCalendar();
+    }
 
     public String getBadgeid() {
         return badgeid;
