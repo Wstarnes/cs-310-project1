@@ -1,6 +1,7 @@
 package cs310project1;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
@@ -27,6 +28,35 @@ public class Punch {
         this.punchtypeid = punchtypeid;
         originalTimeStamp = new GregorianCalendar();
         adjustedTimeStamp = new GregorianCalendar();
+    }
+
+    public void adjust(Shift s) {
+        GregorianCalendar shiftStart = s.getStart();
+        GregorianCalendar startDock = new GregorianCalendar();
+        GregorianCalendar startInterval = new GregorianCalendar();
+        GregorianCalendar shiftStop = s.getStop();
+        GregorianCalendar stopDock = new GregorianCalendar();
+        GregorianCalendar lunchStart = s.getLunch_start();
+        GregorianCalendar lunchStop = s.getLunch_stop();
+        int interval = s.getInterval();
+        int gracePeriod = s.getGrace_period();
+        startDock.setTimeInMillis(shiftStart.getTimeInMillis());
+        startDock.add(Calendar.MINUTE, gracePeriod);
+        startInterval.setTimeInMillis(shiftStart.getTimeInMillis());
+        startInterval.add(Calendar.MINUTE, -interval);
+        stopDock.setTimeInMillis(shiftStop.getTimeInMillis());
+        stopDock.add(Calendar.MINUTE, gracePeriod);
+        if (punchtypeid == 1) {
+            // Punch is late
+            if (originalTimeStamp.getTimeInMillis() > startDock.getTimeInMillis()) {
+                // TODO: Adjust time stamp forward to nearest interval
+            }
+
+            // Punch is early
+            else if (originalTimeStamp.getTimeInMillis() < shiftStart.getTimeInMillis()) {
+                // TODO: Adjust time stamp forward to shift start time
+            }
+        }
     }
 
     public String getBadgeid() {
