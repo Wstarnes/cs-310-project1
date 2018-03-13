@@ -4,9 +4,8 @@ import java.util.Date;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class TASDatabase {
     
@@ -14,12 +13,7 @@ public class TASDatabase {
     private final String password = "teamgroup5";
     private final String url = "jdbc:mysql://localhost/tas";
     private Connection conn;
-
-    /*
-    TODO:
-    Finish getPunch()
-    */
-    
+  
     public TASDatabase(){ 
         try {
             Class.forName("com.mysql.jdbc.Driver").newInstance();
@@ -36,7 +30,6 @@ public class TASDatabase {
             System.err.println(e);
         }
     }
-    
     
     public Badge getBadge(String badge_id){
         
@@ -97,6 +90,20 @@ public class TASDatabase {
     }
     
     public Shift getShift(Badge b){
+        
+        String badge_id = b.getBadge_id();
+        try {
+            //Get the shift id from the badge
+            Statement stmt = conn.createStatement();
+            ResultSet result = stmt.executeQuery("SELECT * FROM employee WHERE badgeid = '" + badge_id + "'");
+            if(result != null){
+                result.next();
+                int shift_id = Integer.parseInt(result.getString("shiftid"));
+                return getShift(shift_id);
+            }
+        } catch (Exception e) {
+            System.err.println(e);
+        }
         return new Shift();
     }
     
@@ -152,32 +159,59 @@ public class TASDatabase {
                     key = keys.getInt(1);
                 }
             }   
-        } catch (SQLException ex) {
-            Logger.getLogger(TASDatabase.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception e) {
+            System.err.println(e);
         }
         return key;
     }
     
     //Returns all punches by a particular person on a particular day
     public ArrayList getDailyPunchList(Badge b, GregorianCalendar ts){
-        
+        //What if check in and check out are on seperate days?
         ArrayList<Punch> punches = new ArrayList<>(); 
         String badge_id = b.getBadge_id();
         Date d = ts.getTime();
         
         try {
             Statement stmt = conn.createStatement();
-            ResultSet result = stmt.executeQuery("SELECT * FROM event WHERE id=" + badge_id);
-            
-            while(result != null){
-                result.next();
-                int term_id = Integer.parseInt(result.getString("terminalid"));
-                int event_id = Integer.parseInt(result.getString("eventtypeid"));
+            ResultSet result = stmt.executeQuery("SELECT *, UNIX_TIMESTAMP(originaltimestamp) * 1000 AS 'timestamp' FROM event WHERE badgeid = '" + badge_id + "'");
+            while(result != null && result.next()){      
+                Date original_ts = new Date(Long.parseLong(result.getString("timestamp")));
+                Calendar cal1 = Calendar.getInstance();
+                cal1.setTime(d);
+                Calendar cal2 = Calendar.getInstance();
+                cal2.setTime(original_ts);
                 
-                Punch p = new Punch(new Badge(badge_id),term_id,event_id);
-                punches.add(p);
+                if(cal1.get(Calendar.ERA) == cal2.get(Calendar.ERA) &&
+                   cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
+                   cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR)){             
+                    int term_id = Integer.parseInt(result.getString("terminalid"));
+                    int event_id = Integer.parseInt(result.getString("eventtypeid"));
+                    Punch p = new Punch(new Badge(badge_id),term_id,event_id);
+                    p.setOriginalTimeStamp(original_ts.getTime());
+                    punches.add(p);                    
+                }
             }
-            
+            //Check for same # of punch ins and outs
+            if(punches.size() % 2 != 0){
+                //Get the first time stamp from the next day and add to punches
+                ResultSet rs = stmt.executeQuery("SELECT *, UNIX_TIMESTAMP(originaltimestamp) * 1000 AS 'timestamp' FROM event WHERE badgeid = '" + badge_id + "'");
+                boolean flag = false;
+                while(rs != null && rs.next()){      
+                    long new_ts = Long.parseLong(rs.getString("timestamp")) ;
+                    long next_day = d.getTime() + (60 * 24 * 1000);
+                    long original_day = d.getTime();
+                    
+                    if(new_ts < next_day && new_ts > original_day && !flag){             
+                        int term_id = Integer.parseInt(rs.getString("terminalid"));
+                        int event_id = Integer.parseInt(rs.getString("eventtypeid"));
+                        Punch p = new Punch(new Badge(badge_id),term_id,event_id);
+                        p.setOriginalTimeStamp(new_ts);
+                        punches.add(p);               
+                        flag = true;
+                    }
+                }                
+            }
         } catch (Exception e) {
             System.err.println(e);
         }

@@ -1,6 +1,6 @@
 package cs310project1;
 
-import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 
 public class CS310Project1 {
 
@@ -8,29 +8,15 @@ public class CS310Project1 {
        
         TASDatabase db = new TASDatabase();
         
-        /* Create New Punch Object */
-
-        Punch p1 = new Punch("021890C0", 101, 1);
-		
-        /* Get Punch Properties */
+        Punch p = db.getPunch(3634);
+        Badge b = db.getBadge(p.getBadgeid());
+        Shift s = db.getShift(b);
         
-        String badgeid = p1.getBadgeid();
-        String originaltimestamp = (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(p1.getOriginalTimeStamp().getTime());
-        int terminalid = p1.getTerminalid();
-        int eventtypeid = p1.getPunchtypeid();
-		
-        /* Insert Punch Into Database */
+        ArrayList<Punch> dailypunchlist = db.getDailyPunchList(b, p.getOriginalTimeStamp());
         
-        int punchid = db.insertPunch(p1);
-		
-        /* Retrieve New Punch */
-        
-        Punch p2 = db.getPunch(punchid);        
-        
-        System.out.println(p2.getBadgeid());
-        System.out.println((new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(p2.getOriginalTimeStamp().getTime()));
-        System.out.println(p2.getTerminalid());
-        System.out.println(p2.getPunchtypeid());
+        for(Punch x : dailypunchlist){
+            System.out.println(x.printOriginalTimestamp());
+        }
         
         db.close();
     }
