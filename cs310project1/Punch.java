@@ -43,18 +43,21 @@ public class Punch {
         startDock.setTimeInMillis(shiftStart.getTimeInMillis());
         startDock.add(Calendar.MINUTE, gracePeriod);
         startInterval.setTimeInMillis(shiftStart.getTimeInMillis());
-        startInterval.add(Calendar.MINUTE, -interval);
+        startInterval.add(Calendar.MINUTE, interval);
+
         stopDock.setTimeInMillis(shiftStop.getTimeInMillis());
-        stopDock.add(Calendar.MINUTE, gracePeriod);
+
+        stopDock.add(Calendar.MINUTE, -gracePeriod);
+
         if (punchtypeid == 1) {
-            // Punch is late
+            // Start punch is late
             if (originalTimeStamp.getTimeInMillis() > startDock.getTimeInMillis()) {
-                // TODO: Adjust time stamp forward to nearest interval
+                adjustedTimeStamp = startInterval;
             }
 
-            // Punch is early
+            // Start punch is early
             else if (originalTimeStamp.getTimeInMillis() < shiftStart.getTimeInMillis()) {
-                // TODO: Adjust time stamp forward to shift start time
+                adjustedTimeStamp = shiftStart;
             }
         }
     }
