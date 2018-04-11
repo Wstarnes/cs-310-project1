@@ -8,16 +8,13 @@ public class CS310Project1 {
        
         TASDatabase db = new TASDatabase();
         
-        Punch p = db.getPunch(3634);
+        Punch p = db.getPunch(4943);
         Badge b = db.getBadge(p.getBadgeid());
-        Shift s = db.getShift(b);
         
-        ArrayList<Punch> dailypunchlist = db.getDailyPunchList(b, p.getOriginalTimeStamp());
+        ArrayList<Punch> dailypunchlist = db.getDailyPunchList(b, p.getOriginaltimestamp());
         
-        for(Punch x : dailypunchlist){
-            System.out.println(x.printOriginalTimestamp());
-        }
-        
+        System.out.println(TASLogic.getPunchListAsJSON(dailypunchlist));
+
         db.close();
     }
     

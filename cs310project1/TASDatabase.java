@@ -9,7 +9,7 @@ import java.util.GregorianCalendar;
 
 public class TASDatabase {
     
-    private final String username = "Tasbot";
+    private final String username = "tasbot";
     private final String password = "teamgroup5";
     private final String url = "jdbc:mysql://localhost/tas";
     private Connection conn;
@@ -66,11 +66,23 @@ public class TASDatabase {
                 String desc = result.getString("description");
                 Date start = sdf.parse(result.getString("start"));
                 Date stop = sdf.parse(result.getString("stop"));
+                
+                String start_hour = result.getString("start").substring(0,2);
+                String start_minute = result.getString("start").substring(3,5);
+                String stop_hour = result.getString("stop").substring(0,2);
+                String stop_minute = result.getString("stop").substring(3,5);
+                
                 int interval = Integer.parseInt(result.getString("interval"));
                 int grace_period = Integer.parseInt(result.getString("graceperiod"));
                 int dock = Integer.parseInt(result.getString("dock"));
                 Date lunch_start = sdf.parse(result.getString("lunchstart"));
                 Date lunch_stop = sdf.parse(result.getString("lunchstop"));
+                
+                String lunch_start_hour = result.getString("lunchstart").substring(0,2);
+                String lunch_start_minute = result.getString("lunchstart").substring(3,5);
+                String lunch_stop_hour = result.getString("lunchstop").substring(0,2);
+                String lunch_stop_minute = result.getString("lunchstop").substring(3,5);
+                
                 int lunch_deduct = Integer.parseInt(result.getString("lunchdeduct"));
                 
                 s.setDescription(desc);
@@ -125,6 +137,7 @@ public class TASDatabase {
                 b = getBadge(badge_id);
                 Punch p = new Punch(b, term_id, event_id);
                 p.setOriginalTimeStamp(ts);
+                p.setPunchid(punch_id);
                 return p;
             }
             else
@@ -141,7 +154,7 @@ public class TASDatabase {
         
         int key = 0, result = 0;
         String badgeid = p.getBadgeid();
-        GregorianCalendar originaltimestamp = p.getOriginalTimeStamp();
+        GregorianCalendar originaltimestamp = p.getOriginaltimestamp();
         int terminalid = p.getTerminalid();
         int eventtypeid = p.getPunchtypeid();
         ResultSet keys;
@@ -167,7 +180,7 @@ public class TASDatabase {
     
     //Returns all punches by a particular person on a particular day
     public ArrayList getDailyPunchList(Badge b, GregorianCalendar ts){
-        //What if check in and check out are on seperate days?
+        
         ArrayList<Punch> punches = new ArrayList<>(); 
         String badge_id = b.getBadge_id();
         Date d = ts.getTime();
@@ -184,10 +197,12 @@ public class TASDatabase {
                 
                 if(cal1.get(Calendar.ERA) == cal2.get(Calendar.ERA) &&
                    cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
-                   cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR)){             
+                   cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR)){  
+                    int punch_id = Integer.parseInt(result.getString("id"));
                     int term_id = Integer.parseInt(result.getString("terminalid"));
                     int event_id = Integer.parseInt(result.getString("eventtypeid"));
                     Punch p = new Punch(new Badge(badge_id),term_id,event_id);
+                    p.setPunchid(punch_id);
                     p.setOriginalTimeStamp(original_ts.getTime());
                     punches.add(p);                    
                 }
@@ -202,10 +217,12 @@ public class TASDatabase {
                     long next_day = d.getTime() + (60 * 24 * 1000);
                     long original_day = d.getTime();
                     
-                    if(new_ts < next_day && new_ts > original_day && !flag){             
+                    if(new_ts < next_day && new_ts > original_day && !flag){     
+                        int punch_id = Integer.parseInt(result.getString("id"));
                         int term_id = Integer.parseInt(rs.getString("terminalid"));
                         int event_id = Integer.parseInt(rs.getString("eventtypeid"));
                         Punch p = new Punch(new Badge(badge_id),term_id,event_id);
+                        p.setPunchid(punch_id);
                         p.setOriginalTimeStamp(new_ts);
                         punches.add(p);               
                         flag = true;

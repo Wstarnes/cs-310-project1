@@ -31,6 +31,7 @@ public class Punch {
     }
 
     public void adjust(Shift s) {
+        
         GregorianCalendar shiftStart = s.getStart();
         GregorianCalendar startDock = new GregorianCalendar();
         GregorianCalendar startInterval = new GregorianCalendar();
@@ -43,21 +44,33 @@ public class Punch {
         startDock.setTimeInMillis(shiftStart.getTimeInMillis());
         startDock.add(Calendar.MINUTE, gracePeriod);
         startInterval.setTimeInMillis(shiftStart.getTimeInMillis());
-        startInterval.add(Calendar.MINUTE, interval);
-
+        startInterval.add(Calendar.MINUTE, -interval);
         stopDock.setTimeInMillis(shiftStop.getTimeInMillis());
-
-        stopDock.add(Calendar.MINUTE, -gracePeriod);
-
-        if (punchtypeid == 1) {
-            // Start punch is late
+        stopDock.add(Calendar.MINUTE, gracePeriod);
+        
+        if (punchtypeid == 1) {//Clocked in
+            //Punch is late
             if (originalTimeStamp.getTimeInMillis() > startDock.getTimeInMillis()) {
+                //Adjust time stamp forward to nearest interval
                 adjustedTimeStamp = startInterval;
             }
-
-            // Start punch is early
+            //Punch is early
             else if (originalTimeStamp.getTimeInMillis() < shiftStart.getTimeInMillis()) {
+                //Adjust time stamp forward to shift start time
                 adjustedTimeStamp = shiftStart;
+            }
+        }
+        
+        else if(punchtypeid == 0){//Clocked out
+            //Punch is late
+            if(originalTimeStamp.getTimeInMillis() > stopDock.getTimeInMillis()){
+                
+                
+            }
+            //Punch is early
+            else if(originalTimeStamp.getTimeInMillis() < shiftStop.getTimeInMillis()){
+                
+                adjustedTimeStamp = shiftStop;
             }
         }
     }
@@ -94,7 +107,7 @@ public class Punch {
         this.punchid = punchid;
     }
 
-    public GregorianCalendar getOriginalTimeStamp() {
+    public GregorianCalendar getOriginaltimestamp() {
         return originalTimeStamp;
     }
 
@@ -128,4 +141,21 @@ public class Punch {
         }     
     }
     
+    public String printAdjustedTimestamp(){
+        //Incomplete
+        SimpleDateFormat fmt = new SimpleDateFormat("EEE MM/dd/yyyy HH:mm:ss");
+        fmt.setCalendar(adjustedTimeStamp);
+        String stamp = fmt.format(adjustedTimeStamp.getTime()).toUpperCase();
+        
+        switch (punchtypeid){
+            case 0:
+                return "#" + badgeid + " CLOCKED OUT: " + stamp;
+                
+            case 1:
+                return "#" + badgeid + " CLOCKED IN: " + stamp;
+                 
+            default:
+                return "#" + badgeid + " TIMED OUT: " + stamp;
+        }          
+    }
 }
