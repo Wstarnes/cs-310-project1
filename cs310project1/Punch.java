@@ -13,6 +13,7 @@ public class Punch {
     private int punchid;
     private GregorianCalendar originalTimeStamp;
     private GregorianCalendar adjustedTimeStamp;
+    private String eventdata = null;
 
     public Punch(Badge badge, int terminalid, int punchtypeid){
         this.badgeid = badge.getBadge_id();
@@ -41,12 +42,72 @@ public class Punch {
         GregorianCalendar lunchStop = s.getLunch_stop();
         int interval = s.getInterval();
         int gracePeriod = s.getGrace_period();
-        startDock.setTimeInMillis(shiftStart.getTimeInMillis());
+        
+        //set all calendar objects to millisecond
+        long originalTimeStampMillis = originalTimeStamp.getTimeInMillis();
+        long shiftStartMillis = shiftStart.getTimeInMillis();
+        long startDockMillis = startDock.getTimeInMillis();
+        long startIntervalMillis = startInterval.getTimeInMillis();
+        long shiftStopMillis = shiftStop.getTimeInMillis();
+        long stopDockMillis = stopDock.getTimeInMillis();
+        long lunchStartMillis = lunchStart.getTimeInMillis();
+        long lunchStopMillis = lunchStop.getTimeInMillis();
+        
+        //in-punch for start of day
+        if(punchtypeid == 1){
+            
+            //Within Start Interval and Start grace period
+            if(originalTimeStampMillis >= (shiftStartMillis - (interval *60000)) && originalTimeStampMillis <= (shiftStartMillis + (gracePeriod * 60000))){
+                adjustedTimeStamp.setTimeInMillis(shiftStartMillis);
+                eventdata = "Shift Start";
+            }
+            
+            //After grace period
+            else if(originalTimeStampMillis > (shiftStartMillis + (gracePeriod * 60000))){
+                adjustedTimeStamp.setTimeInMillis(originalTimeStampMillis + startDockMillis);
+                eventdata = "Shift Dock";
+            }
+            
+            //Before Start Interval
+            else{
+                //Placeholder for tonight
+            }
+        }
+        
+        else if(punchtypeid == 2){
+            //Within Stop Interval and Stop Grace Period
+            if(originalTimeStampMillis <= (shiftStopMillis + (interval * 60000)) && originalTimeStampMillis >= (shiftStopMillis - (gracePeriod * 60000))){
+                adjustedTimeStamp.setTimeInMillis(shiftStopMillis);
+                eventdata = "Shift Stop";
+            }
+            
+            //Before the grace period
+            else if(originalTimeStampMillis < (shiftStopMillis - (gracePeriod * 60000))){
+                adjustedTimeStamp.setTimeInMillis(originalTimeStampMillis - stopDockMillis);
+                eventdata = "Shift Dock";
+            }
+            
+            //After Stop Interval
+            else{
+                //placeholder for tonight
+            }
+        }
+        
+        //Lunch out
+        else if(punchtypeid == 3){
+            
+        }
+        
+        
+        
+        /*startDock.setTimeInMillis(shiftStart.getTimeInMillis());
         startDock.add(Calendar.MINUTE, gracePeriod);
         startInterval.setTimeInMillis(shiftStart.getTimeInMillis());
         startInterval.add(Calendar.MINUTE, -interval);
         stopDock.setTimeInMillis(shiftStop.getTimeInMillis());
         stopDock.add(Calendar.MINUTE, gracePeriod);
+        
+        
         
         if (punchtypeid == 1) {//Clocked in
             //Punch is late
@@ -72,7 +133,7 @@ public class Punch {
                 
                 adjustedTimeStamp = shiftStop;
             }
-        }
+        }*/
     }
 
     public String getBadgeid() {
