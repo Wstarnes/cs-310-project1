@@ -19,6 +19,7 @@ public class Punch {
         this.badgeid = badge.getBadge_id();
         this.terminalid = terminalid;
         this.punchtypeid = punchtypeid;
+        
         originalTimeStamp = new GregorianCalendar();
         adjustedTimeStamp = new GregorianCalendar();
     }
@@ -43,7 +44,11 @@ public class Punch {
         int interval = s.getInterval();
         int gracePeriod = s.getGrace_period();
         
+<<<<<<< HEAD
         //set all calendar objects to millisecond
+=======
+        //Set all calanders to milliseconds
+>>>>>>> Progress on Feat 3
         long originalTimeStampMillis = originalTimeStamp.getTimeInMillis();
         long shiftStartMillis = shiftStart.getTimeInMillis();
         long startDockMillis = startDock.getTimeInMillis();
@@ -53,6 +58,7 @@ public class Punch {
         long lunchStartMillis = lunchStart.getTimeInMillis();
         long lunchStopMillis = lunchStop.getTimeInMillis();
         
+<<<<<<< HEAD
         //in-punch for start of day
         if(punchtypeid == 1){
             
@@ -119,7 +125,33 @@ public class Punch {
             else if (originalTimeStamp.getTimeInMillis() < shiftStart.getTimeInMillis()) {
                 //Adjust time stamp forward to shift start time
                 adjustedTimeStamp = shiftStart;
+=======
+        
+        //in-punch for start of day
+        if (punchtypeid == 1) {
+            //check in too early or before the upper grace period bound
+            if(originalTimeStampMillis > (shiftStartMillis - interval * 60000) && originalTimeStampMillis < shiftStartMillis + (gracePeriod * 60000))
+                adjustedTimeStamp.setTimeInMillis(shiftStartMillis);
+            //check in too late
+            else if(originalTimeStampMillis > shiftStartMillis + (gracePeriod * 60000))
+                adjustedTimeStamp.setTimeInMillis(originalTimeStampMillis + (startDockMillis * 60000));
+            //check in is passed grace period
+            else if(originalTimeStampMillis > shiftStartMillis + (gracePeriod * 60000)){
+                adjustedTimeStamp.setTimeInMillis(originalTimeStampMillis + (startDockMillis + startDockMillis));
             }
+            else{
+                //THIS IS A PLACEHOLDER! I CAN'T THINK RIGHT NOW HOW TO DO THIS
+            }
+        }
+        else if(punchtypeid == 2){
+            //Check out is within grace period and interval
+            if(originalTimeStampMillis > shiftStopMillis - (gracePeriod * 60000) && originalTimeStampMillis < shiftStopMillis + (interval * 60000)){
+                adjustedTimeStamp.setTimeInMillis(shiftStopMillis);
+>>>>>>> Progress on Feat 3
+            }
+            //check out is before grace period
+            else if(originalTimeStampMillis < shiftStopMillis - (gracePeriod * 60000))
+                adjustedTimeStamp.setTimeInMillis(originalTimeStampMillis -(stopDockMillis * 60000));
         }
         
         else if(punchtypeid == 0){//Clocked out
