@@ -13,7 +13,7 @@ public class Punch {
     private int punchid;
     private GregorianCalendar originalTimeStamp;
     private GregorianCalendar adjustedTimeStamp;
-    private String eventdata = null;
+    private String eventdata;
 
     public Punch(Badge badge, int terminalid, int punchtypeid){
         this.badgeid = badge.getBadge_id();
@@ -33,7 +33,6 @@ public class Punch {
     }
 
     public void adjust(Shift s) {
-        
         GregorianCalendar shiftStart = s.getStart();
         GregorianCalendar startDock = new GregorianCalendar();
         GregorianCalendar startInterval = new GregorianCalendar();
@@ -44,11 +43,7 @@ public class Punch {
         int interval = s.getInterval();
         int gracePeriod = s.getGrace_period();
         
-<<<<<<< HEAD
-        //set all calendar objects to millisecond
-=======
         //Set all calanders to milliseconds
->>>>>>> Progress on Feat 3
         long originalTimeStampMillis = originalTimeStamp.getTimeInMillis();
         long shiftStartMillis = shiftStart.getTimeInMillis();
         long startDockMillis = startDock.getTimeInMillis();
@@ -58,114 +53,120 @@ public class Punch {
         long lunchStartMillis = lunchStart.getTimeInMillis();
         long lunchStopMillis = lunchStop.getTimeInMillis();
         
-<<<<<<< HEAD
-        //in-punch for start of day
-        if(punchtypeid == 1){
-            
-            //Within Start Interval and Start grace period
-            if(originalTimeStampMillis >= (shiftStartMillis - (interval *60000)) && originalTimeStampMillis <= (shiftStartMillis + (gracePeriod * 60000))){
-                adjustedTimeStamp.setTimeInMillis(shiftStartMillis);
-                eventdata = "Shift Start";
-            }
-            
-            //After grace period
-            else if(originalTimeStampMillis > (shiftStartMillis + (gracePeriod * 60000))){
-                adjustedTimeStamp.setTimeInMillis(originalTimeStampMillis + startDockMillis);
-                eventdata = "Shift Dock";
-            }
-            
-            //Before Start Interval
-            else{
-                //Placeholder for tonight
-            }
-        }
-        
-        else if(punchtypeid == 2){
-            //Within Stop Interval and Stop Grace Period
-            if(originalTimeStampMillis <= (shiftStopMillis + (interval * 60000)) && originalTimeStampMillis >= (shiftStopMillis - (gracePeriod * 60000))){
-                adjustedTimeStamp.setTimeInMillis(shiftStopMillis);
-                eventdata = "Shift Stop";
-            }
-            
-            //Before the grace period
-            else if(originalTimeStampMillis < (shiftStopMillis - (gracePeriod * 60000))){
-                adjustedTimeStamp.setTimeInMillis(originalTimeStampMillis - stopDockMillis);
-                eventdata = "Shift Dock";
-            }
-            
-            //After Stop Interval
-            else{
-                //placeholder for tonight
-            }
-        }
-        
-        //Lunch out
-        else if(punchtypeid == 3){
-            
-        }
-        
-        
-        
-        /*startDock.setTimeInMillis(shiftStart.getTimeInMillis());
-        startDock.add(Calendar.MINUTE, gracePeriod);
-        startInterval.setTimeInMillis(shiftStart.getTimeInMillis());
-        startInterval.add(Calendar.MINUTE, -interval);
-        stopDock.setTimeInMillis(shiftStop.getTimeInMillis());
-        stopDock.add(Calendar.MINUTE, gracePeriod);
-        
-        
-        
-        if (punchtypeid == 1) {//Clocked in
-            //Punch is late
-            if (originalTimeStamp.getTimeInMillis() > startDock.getTimeInMillis()) {
-                //Adjust time stamp forward to nearest interval
-                adjustedTimeStamp = startInterval;
-            }
-            //Punch is early
-            else if (originalTimeStamp.getTimeInMillis() < shiftStart.getTimeInMillis()) {
-                //Adjust time stamp forward to shift start time
-                adjustedTimeStamp = shiftStart;
-=======
-        
-        //in-punch for start of day
+         
+        //check-in punches
         if (punchtypeid == 1) {
             //check in too early or before the upper grace period bound
-            if(originalTimeStampMillis > (shiftStartMillis - interval * 60000) && originalTimeStampMillis < shiftStartMillis + (gracePeriod * 60000))
+            if(originalTimeStampMillis > (shiftStartMillis - interval * 60000) && originalTimeStampMillis < shiftStartMillis + (gracePeriod * 60000)){
                 adjustedTimeStamp.setTimeInMillis(shiftStartMillis);
+                eventdata = "Shift Start";
+        }
+            
             //check in too late
-            else if(originalTimeStampMillis > shiftStartMillis + (gracePeriod * 60000))
+            else if(originalTimeStampMillis > shiftStartMillis + (gracePeriod * 60000)){
                 adjustedTimeStamp.setTimeInMillis(originalTimeStampMillis + (startDockMillis * 60000));
+                eventdata = "Shift Dock";
+            }
+            
             //check in is passed grace period
             else if(originalTimeStampMillis > shiftStartMillis + (gracePeriod * 60000)){
                 adjustedTimeStamp.setTimeInMillis(originalTimeStampMillis + (startDockMillis + startDockMillis));
+                eventdata = "Dock";
             }
+            
+            //end of lunch
+            else if(originalTimeStampMillis > lunchStartMillis && originalTimeStampMillis <= lunchStopMillis){
+                adjustedTimeStamp.setTimeInMillis(lunchStopMillis);
+                eventdata = "Lunch Stop";
+            }
+            
             else{
-                //THIS IS A PLACEHOLDER! I CAN'T THINK RIGHT NOW HOW TO DO THIS
+                //Minute is between 0 and 8
+                if(originalTimeStamp.MINUTE >= 0 && originalTimeStamp.MINUTE < 8){
+                    originalTimeStamp.set(originalTimeStamp.MINUTE, 0);
+                    eventdata = "Interval Round";
+                }
+                
+                //Minute is between 8 and 23 so rounds to 15
+                else if(originalTimeStamp.MINUTE >= 8 && originalTimeStamp.MINUTE < 23){
+                    originalTimeStamp.set(originalTimeStamp.MINUTE, 15);
+                    eventdata = "Interval Round";
+                }
+                
+                //Minute is between 24 and 37
+                else if(originalTimeStamp.MINUTE >= 24 && originalTimeStamp.MINUTE < 37){
+                    originalTimeStamp.set(originalTimeStamp.MINUTE, 30);
+                    eventdata = "Interval Round";
+                }
+                
+                //Minute is between 38 and 52
+                else if(originalTimeStamp.MINUTE >= 38 && originalTimeStamp.MINUTE < 52){
+                    originalTimeStamp.set(originalTimeStamp.MINUTE, 45);
+                    eventdata = "Interval Round";
+                }
+                
+                //Minute is after 52 and needs to round to the next hour
+                else if(originalTimeStamp.MINUTE >= 53){
+                    originalTimeStamp.set(originalTimeStamp.MINUTE, 0);
+                    originalTimeStamp.add(originalTimeStamp.HOUR, 1);
+                    eventdata = "Interval Round";
+                }
             }
         }
+        
+        //check-out punches
         else if(punchtypeid == 2){
             //Check out is within grace period and interval
             if(originalTimeStampMillis > shiftStopMillis - (gracePeriod * 60000) && originalTimeStampMillis < shiftStopMillis + (interval * 60000)){
                 adjustedTimeStamp.setTimeInMillis(shiftStopMillis);
->>>>>>> Progress on Feat 3
+                eventdata = "Shift Stop";
             }
             //check out is before grace period
-            else if(originalTimeStampMillis < shiftStopMillis - (gracePeriod * 60000))
+            else if(originalTimeStampMillis < shiftStopMillis - (gracePeriod * 60000)){
                 adjustedTimeStamp.setTimeInMillis(originalTimeStampMillis -(stopDockMillis * 60000));
+                eventdata = "Shift Dock";
+            }
+            
+            //start of lunch
+            else if(originalTimeStampMillis >= lunchStartMillis && originalTimeStampMillis < lunchStopMillis){
+                adjustedTimeStamp.setTimeInMillis(lunchStartMillis);
+                eventdata = "Lunch Start";
+            }
+            
+            //Check ouy is after the interval
+            else{
+                //Minute is between 0 and 8
+                if(originalTimeStamp.MINUTE >= 0 && originalTimeStamp.MINUTE < 8){
+                    originalTimeStamp.set(originalTimeStamp.MINUTE, 0);
+                    eventdata = "Interval Round";
+                }
+                
+                //Minute is between 8 and 23 so rounds to 15
+                else if(originalTimeStamp.MINUTE >= 8 && originalTimeStamp.MINUTE < 23){
+                    originalTimeStamp.set(originalTimeStamp.MINUTE, 15);
+                    eventdata = "Interval Round";
+                }
+                
+                //Minute is between 24 and 37
+                else if(originalTimeStamp.MINUTE >= 24 && originalTimeStamp.MINUTE < 37){
+                    originalTimeStamp.set(originalTimeStamp.MINUTE, 30);
+                    eventdata = "Interval Round";
+                }
+                
+                //Minute is between 38 and 52
+                else if(originalTimeStamp.MINUTE >= 38 && originalTimeStamp.MINUTE < 52){
+                    originalTimeStamp.set(originalTimeStamp.MINUTE, 45);
+                    eventdata = "Interval Round";
+                }
+                
+                //Minute is after 52 and needs to round to the next hour
+                else if(originalTimeStamp.MINUTE >= 53){
+                    originalTimeStamp.set(originalTimeStamp.MINUTE, 0);
+                    originalTimeStamp.add(originalTimeStamp.HOUR, 1);
+                    eventdata = "Interval Round";
+                }
+            }
         }
-        
-        else if(punchtypeid == 0){//Clocked out
-            //Punch is late
-            if(originalTimeStamp.getTimeInMillis() > stopDock.getTimeInMillis()){
-                
-                
-            }
-            //Punch is early
-            else if(originalTimeStamp.getTimeInMillis() < shiftStop.getTimeInMillis()){
-                
-                adjustedTimeStamp = shiftStop;
-            }
-        }*/
     }
 
     public String getBadgeid() {
@@ -200,7 +201,7 @@ public class Punch {
         this.punchid = punchid;
     }
 
-    public GregorianCalendar getOriginaltimestamp() {
+    public GregorianCalendar getOriginalTimeStamp() {
         return originalTimeStamp;
     }
 
@@ -234,21 +235,4 @@ public class Punch {
         }     
     }
     
-    public String printAdjustedTimestamp(){
-        //Incomplete
-        SimpleDateFormat fmt = new SimpleDateFormat("EEE MM/dd/yyyy HH:mm:ss");
-        fmt.setCalendar(adjustedTimeStamp);
-        String stamp = fmt.format(adjustedTimeStamp.getTime()).toUpperCase();
-        
-        switch (punchtypeid){
-            case 0:
-                return "#" + badgeid + " CLOCKED OUT: " + stamp;
-                
-            case 1:
-                return "#" + badgeid + " CLOCKED IN: " + stamp;
-                 
-            default:
-                return "#" + badgeid + " TIMED OUT: " + stamp;
-        }          
-    }
 }
