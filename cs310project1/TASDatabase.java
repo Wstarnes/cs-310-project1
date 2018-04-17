@@ -136,6 +136,7 @@ public class TASDatabase {
                 //String adjusted_time_stamp = result.getString("adjustedtimestamp");
                 b = getBadge(badge_id);
                 Punch p = new Punch(b, term_id, event_id);
+                p.setEventdata(event_data);
                 p.setOriginalTimeStamp(ts);
                 p.setPunchid(punch_id);
                 return p;
@@ -201,8 +202,10 @@ public class TASDatabase {
                     int punch_id = Integer.parseInt(result.getString("id"));
                     int term_id = Integer.parseInt(result.getString("terminalid"));
                     int event_id = Integer.parseInt(result.getString("eventtypeid"));
+                    String eventdata = result.getString("eventdata");
                     Punch p = new Punch(new Badge(badge_id),term_id,event_id);
                     p.setPunchid(punch_id);
+                    p.setEventdata(eventdata);
                     p.setOriginalTimeStamp(original_ts.getTime());
                     punches.add(p);                    
                 }
@@ -222,6 +225,7 @@ public class TASDatabase {
                         int term_id = Integer.parseInt(rs.getString("terminalid"));
                         int event_id = Integer.parseInt(rs.getString("eventtypeid"));
                         Punch p = new Punch(new Badge(badge_id),term_id,event_id);
+                        p.setEventdata(result.getString("eventdata"));
                         p.setPunchid(punch_id);
                         p.setOriginalTimeStamp(new_ts);
                         punches.add(p);               

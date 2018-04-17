@@ -1,8 +1,6 @@
 package cs310project1;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 
 public class Punch {
@@ -19,17 +17,19 @@ public class Punch {
         this.badgeid = badge.getBadge_id();
         this.terminalid = terminalid;
         this.punchtypeid = punchtypeid;
+        this.originalTimeStamp = new GregorianCalendar();
+        this.adjustedTimeStamp = new GregorianCalendar();
+        this.eventdata = "";
         
-        originalTimeStamp = new GregorianCalendar();
-        adjustedTimeStamp = new GregorianCalendar();
     }
     
     public Punch(String badge_id, int terminalid, int punchtypeid){
         this.badgeid = badge_id;
         this.terminalid = terminalid;
         this.punchtypeid = punchtypeid;
-        originalTimeStamp = new GregorianCalendar();
-        adjustedTimeStamp = new GregorianCalendar();
+        this.originalTimeStamp = new GregorianCalendar();
+        this.adjustedTimeStamp = new GregorianCalendar();
+        this.eventdata = "";
     }
 
     public void adjust(Shift s) {
@@ -169,6 +169,14 @@ public class Punch {
         }
     }
 
+    public String getEventdata(){
+        return eventdata;
+    }
+    
+    public void setEventdata(String eventdata){
+        this.eventdata = eventdata;
+    }
+    
     public String getBadgeid() {
         return badgeid;
     }
@@ -201,7 +209,7 @@ public class Punch {
         this.punchid = punchid;
     }
 
-    public GregorianCalendar getOriginalTimeStamp() {
+    public GregorianCalendar getOriginaltimestamp() {
         return originalTimeStamp;
     }
 
@@ -215,6 +223,25 @@ public class Punch {
 
     public void setAdjustedTimeStamp(GregorianCalendar adjustedTimeStamp) {
         this.adjustedTimeStamp = adjustedTimeStamp;
+    }
+    
+    public String printAdjustedTimestamp(){
+        
+        SimpleDateFormat fmt = new SimpleDateFormat("EEE MM/dd/yyyy HH:mm:ss");
+        fmt.setCalendar(adjustedTimeStamp);
+        String stamp = fmt.format(adjustedTimeStamp.getTime()).toUpperCase();
+        
+        switch (punchtypeid){
+            case 0:
+                return "#" + badgeid + " CLOCKED OUT: " + stamp + " (" + eventdata + ")";
+                
+            case 1:
+                return "#" + badgeid + " CLOCKED IN: " + stamp + " (" + eventdata + ")";
+                 
+            default:
+                return "#" + badgeid + " TIMED OUT: " + stamp + " (" + eventdata + ")";
+        }         
+        
     }
     
     public String printOriginalTimestamp(){

@@ -21,7 +21,7 @@ public class TASLogic {
             punchData.put("badgeid", String.valueOf(punch.getBadgeid()));
             punchData.put("terminalid", String.valueOf(punch.getTerminalid()));
             punchData.put("eventtypeid", String.valueOf(punch.getPunchtypeid()));
-            punchData.put("eventdata", String.valueOf("PLACEHOLDER"));
+            punchData.put("eventdata", String.valueOf(punch.getEventdata()));
             punchData.put("originaltimestamp", String.valueOf(punch.getOriginaltimestamp().getTimeInMillis()));
 
             /* Append HashMap to ArrayList */
@@ -30,6 +30,10 @@ public class TASLogic {
         }
         String json = JSONValue.toJSONString(jsonData);
         return json;
+    }
+    
+    public static int calculateTotalMinutes(ArrayList<Punch> dailypunchlist, Shift shift){
+        return 0;
     }
 
 }
