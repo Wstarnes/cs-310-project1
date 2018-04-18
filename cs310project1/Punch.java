@@ -1,6 +1,7 @@
 package cs310project1;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 public class Punch {
@@ -36,8 +37,11 @@ public class Punch {
         GregorianCalendar shiftStart = s.getStart();
         GregorianCalendar startDock = new GregorianCalendar();
         GregorianCalendar startInterval = new GregorianCalendar();
+        GregorianCalendar startGrace = new GregorianCalendar();
         GregorianCalendar shiftStop = s.getStop();
         GregorianCalendar stopDock = new GregorianCalendar();
+        GregorianCalendar stopInterval = new GregorianCalendar();
+        GregorianCalendar stopGrace = new GregorianCalendar();
         GregorianCalendar lunchStart = s.getLunch_start();
         GregorianCalendar lunchStop = s.getLunch_stop();
         int interval = s.getInterval();
@@ -45,11 +49,42 @@ public class Punch {
         
         //Set all calanders to milliseconds
         long originalTimeStampMillis = originalTimeStamp.getTimeInMillis();
+        shiftStart.setTimeInMillis(originalTimeStampMillis);
+        shiftStart.set(Calendar.HOUR, s.getStart().get(Calendar.HOUR));
+        shiftStart.set(Calendar.MINUTE, s.getStart().get(Calendar.MINUTE));
+        shiftStart.set(Calendar.SECOND, 0);
         long shiftStartMillis = shiftStart.getTimeInMillis();
+
+        startDock.setTimeInMillis(shiftStartMillis);
+        startDock.add(Calendar.MINUTE, s.getDock());
         long startDockMillis = startDock.getTimeInMillis();
+
+        startInterval.setTimeInMillis(shiftStartMillis);
+        startInterval.add(Calendar.MINUTE, -s.getInterval());
         long startIntervalMillis = startInterval.getTimeInMillis();
+
+        startGrace.setTimeInMillis(shiftStartMillis);
+        startGrace.add(Calendar.MINUTE, s.getGrace_period());
+        long startGraceMillis = startGrace.getTimeInMillis();
+
+        shiftStop.setTimeInMillis(originalTimeStampMillis);
+        shiftStop.set(Calendar.HOUR, s.getStop().get(Calendar.HOUR));
+        shiftStop.set(Calendar.MINUTE, s.getStop().get(Calendar.MINUTE));
+        shiftStop.set(Calendar.SECOND, 0);
         long shiftStopMillis = shiftStop.getTimeInMillis();
+
+        stopDock.setTimeInMillis(shiftStopMillis);
+        stopDock.add(Calendar.MINUTE, s.getDock());
         long stopDockMillis = stopDock.getTimeInMillis();
+
+        stopInterval.setTimeInMillis(shiftStopMillis);
+        stopInterval.add(Calendar.MINUTE, -s.getInterval());
+        long stopIntervalMillis = stopInterval.getTimeInMillis();
+
+        stopGrace.setTimeInMillis(shiftStopMillis);
+        stopGrace.add(Calendar.MINUTE, s.getGrace_period());
+        long stopGraceMillis = stopGrace.getTimeInMillis();
+
         long lunchStartMillis = lunchStart.getTimeInMillis();
         long lunchStopMillis = lunchStop.getTimeInMillis();
         
@@ -57,10 +92,10 @@ public class Punch {
         //check-in punches
         if (punchtypeid == 1) {
             //check in too early or before the upper grace period bound
-            if(originalTimeStampMillis > (shiftStartMillis - interval * 60000) && originalTimeStampMillis < shiftStartMillis + (gracePeriod * 60000)){
+            if(originalTimeStampMillis >= startIntervalMillis && originalTimeStampMillis <= shiftStartMillis){
                 adjustedTimeStamp.setTimeInMillis(shiftStartMillis);
                 eventdata = "Shift Start";
-        }
+            }
             
             //check in too late
             else if(originalTimeStampMillis > shiftStartMillis + (gracePeriod * 60000)){
@@ -78,39 +113,6 @@ public class Punch {
             else if(originalTimeStampMillis > lunchStartMillis && originalTimeStampMillis <= lunchStopMillis){
                 adjustedTimeStamp.setTimeInMillis(lunchStopMillis);
                 eventdata = "Lunch Stop";
-            }
-            
-            else{
-                //Minute is between 0 and 8
-                if(originalTimeStamp.MINUTE >= 0 && originalTimeStamp.MINUTE < 8){
-                    originalTimeStamp.set(originalTimeStamp.MINUTE, 0);
-                    eventdata = "Interval Round";
-                }
-                
-                //Minute is between 8 and 23 so rounds to 15
-                else if(originalTimeStamp.MINUTE >= 8 && originalTimeStamp.MINUTE < 23){
-                    originalTimeStamp.set(originalTimeStamp.MINUTE, 15);
-                    eventdata = "Interval Round";
-                }
-                
-                //Minute is between 24 and 37
-                else if(originalTimeStamp.MINUTE >= 24 && originalTimeStamp.MINUTE < 37){
-                    originalTimeStamp.set(originalTimeStamp.MINUTE, 30);
-                    eventdata = "Interval Round";
-                }
-                
-                //Minute is between 38 and 52
-                else if(originalTimeStamp.MINUTE >= 38 && originalTimeStamp.MINUTE < 52){
-                    originalTimeStamp.set(originalTimeStamp.MINUTE, 45);
-                    eventdata = "Interval Round";
-                }
-                
-                //Minute is after 52 and needs to round to the next hour
-                else if(originalTimeStamp.MINUTE >= 53){
-                    originalTimeStamp.set(originalTimeStamp.MINUTE, 0);
-                    originalTimeStamp.add(originalTimeStamp.HOUR, 1);
-                    eventdata = "Interval Round";
-                }
             }
         }
         
@@ -131,40 +133,6 @@ public class Punch {
             else if(originalTimeStampMillis >= lunchStartMillis && originalTimeStampMillis < lunchStopMillis){
                 adjustedTimeStamp.setTimeInMillis(lunchStartMillis);
                 eventdata = "Lunch Start";
-            }
-            
-            //Check ouy is after the interval
-            else{
-                //Minute is between 0 and 8
-                if(originalTimeStamp.MINUTE >= 0 && originalTimeStamp.MINUTE < 8){
-                    originalTimeStamp.set(originalTimeStamp.MINUTE, 0);
-                    eventdata = "Interval Round";
-                }
-                
-                //Minute is between 8 and 23 so rounds to 15
-                else if(originalTimeStamp.MINUTE >= 8 && originalTimeStamp.MINUTE < 23){
-                    originalTimeStamp.set(originalTimeStamp.MINUTE, 15);
-                    eventdata = "Interval Round";
-                }
-                
-                //Minute is between 24 and 37
-                else if(originalTimeStamp.MINUTE >= 24 && originalTimeStamp.MINUTE < 37){
-                    originalTimeStamp.set(originalTimeStamp.MINUTE, 30);
-                    eventdata = "Interval Round";
-                }
-                
-                //Minute is between 38 and 52
-                else if(originalTimeStamp.MINUTE >= 38 && originalTimeStamp.MINUTE < 52){
-                    originalTimeStamp.set(originalTimeStamp.MINUTE, 45);
-                    eventdata = "Interval Round";
-                }
-                
-                //Minute is after 52 and needs to round to the next hour
-                else if(originalTimeStamp.MINUTE >= 53){
-                    originalTimeStamp.set(originalTimeStamp.MINUTE, 0);
-                    originalTimeStamp.add(originalTimeStamp.HOUR, 1);
-                    eventdata = "Interval Round";
-                }
             }
         }
     }
