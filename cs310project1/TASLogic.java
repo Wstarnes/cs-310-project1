@@ -33,7 +33,18 @@ public class TASLogic {
     }
     
     public static int calculateTotalMinutes(ArrayList<Punch> dailypunchlist, Shift shift){
-        return 0;
+        
+        int total_minutes = 0;
+        
+        for(int i = 0; i < dailypunchlist.size() - 1; i += 2){
+            
+            Punch current = dailypunchlist.get(i);
+            Punch next = dailypunchlist.get(i + 1);
+            if(current.getPunchtypeid() != 2 && next.getPunchtypeid() != 2){
+                long punch_diff = next.getAdjustedTimeStamp().getTimeInMillis() - current.getAdjustedTimeStamp().getTimeInMillis();
+                total_minutes += (punch_diff / 60000);
+            }
+        }
+        return total_minutes;
     }
-
 }

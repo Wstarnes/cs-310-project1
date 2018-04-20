@@ -64,9 +64,10 @@ public class TASDatabase {
             if(result != null){
                 result.next();
                 String desc = result.getString("description");
+                
                 Date start = sdf.parse(result.getString("start"));
                 Date stop = sdf.parse(result.getString("stop"));
-                
+
                 String start_hour = result.getString("start").substring(0,2);
                 String start_minute = result.getString("start").substring(3,5);
                 String stop_hour = result.getString("stop").substring(0,2);
@@ -84,7 +85,7 @@ public class TASDatabase {
                 String lunch_stop_minute = result.getString("lunchstop").substring(3,5);
                 
                 int lunch_deduct = Integer.parseInt(result.getString("lunchdeduct"));
-                
+
                 s.setDescription(desc);
                 s.setStart(start);
                 s.setStop(stop);
@@ -199,6 +200,7 @@ public class TASDatabase {
                 if(cal1.get(Calendar.ERA) == cal2.get(Calendar.ERA) &&
                    cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
                    cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR)){  
+                    Shift s = getShift(b);
                     int punch_id = Integer.parseInt(result.getString("id"));
                     int term_id = Integer.parseInt(result.getString("terminalid"));
                     int event_id = Integer.parseInt(result.getString("eventtypeid"));
@@ -207,6 +209,7 @@ public class TASDatabase {
                     p.setPunchid(punch_id);
                     p.setEventdata(eventdata);
                     p.setOriginalTimeStamp(original_ts.getTime());
+                    p.adjust(s);
                     punches.add(p);                    
                 }
             }
