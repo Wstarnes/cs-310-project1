@@ -45,7 +45,7 @@ public class Punch {
         GregorianCalendar stopGrace = new GregorianCalendar();
         GregorianCalendar lunchStart = new GregorianCalendar();
         GregorianCalendar lunchStop = new GregorianCalendar();
-
+        
         //Set all calanders to milliseconds
         long originalTimeStampMillis = originalTimeStamp.getTimeInMillis();
         
@@ -101,23 +101,23 @@ public class Punch {
         if(shiftStart.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY || shiftStart.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY){
             //Check-in
             if(punchtypeid == 1){
-                if(originalTimeStampMillis >= startIntervalMillis){
+                if(originalTimeStampMillis >= startIntervalMillis && originalTimeStampMillis <= shiftStartMillis + (s.getInterval() * 60000) ){
+                    adjustedTimeStamp.setTimeInMillis(originalTimeStampMillis);
+                    eventdata = "None";
+                }
+                else{
                     adjustedTimeStamp.setTimeInMillis(shiftStartMillis);
                     eventdata = "Interval Round";
                 }
-                else{
-                    adjustedTimeStamp.setTimeInMillis(originalTimeStampMillis);
-                    eventdata = "None";
-                }
             }
             else if(punchtypeid == 0){
-                if(originalTimeStampMillis <= stopIntervalMillis){
-                    adjustedTimeStamp.setTimeInMillis(shiftStopMillis);
-                    eventdata = "Interval Round";
-                }
-                else{
+                if(originalTimeStampMillis <= stopIntervalMillis && originalTimeStampMillis >= shiftStopMillis + (s.getInterval() * 60000)){
                     adjustedTimeStamp.setTimeInMillis(originalTimeStampMillis);
                     eventdata = "None";
+                }
+                else{
+                    adjustedTimeStamp.setTimeInMillis(shiftStopMillis);
+                    eventdata = "Interval Round";
                 }
             }        
         }
@@ -125,13 +125,13 @@ public class Punch {
         else{
             //check-in punches
             if (punchtypeid == 1) {
-                if(originalTimeStampMillis <= startGraceMillis && originalTimeStampMillis >= shiftStartMillis){
+                if(originalTimeStampMillis <= shiftStartMillis && originalTimeStampMillis >= startIntervalMillis){
                     adjustedTimeStamp.setTimeInMillis(shiftStartMillis);
                     eventdata = "Shift Start";
                 }
-                else if(originalTimeStampMillis >= startIntervalMillis && originalTimeStampMillis <= shiftStartMillis){
+                else if(originalTimeStampMillis >= shiftStartMillis && originalTimeStampMillis <= startGraceMillis){
                     adjustedTimeStamp.setTimeInMillis(shiftStartMillis);
-                    eventdata = "Interval Round";
+                    eventdata = "Shift Start";
                 }
                 else if(originalTimeStampMillis >= lunchStartMillis && originalTimeStampMillis <= lunchStopMillis){
                     adjustedTimeStamp.setTimeInMillis(lunchStopMillis);
@@ -141,6 +141,10 @@ public class Punch {
                     adjustedTimeStamp.setTimeInMillis(startDockMillis);
                     eventdata = "Shift Dock";
                 }   
+                else if(originalTimeStamp.get(Calendar.HOUR_OF_DAY) == shiftStart.get(Calendar.HOUR_OF_DAY) && originalTimeStamp.get(Calendar.MINUTE) == shiftStart.get(Calendar.MINUTE)){
+                    adjustedTimeStamp.setTimeInMillis(shiftStartMillis);
+                    eventdata = "None";
+                }
             }
             //check-out punches
             else if(punchtypeid == 0){
@@ -149,9 +153,9 @@ public class Punch {
                     adjustedTimeStamp.setTimeInMillis(shiftStopMillis);
                     eventdata = "Shift Stop";
                 }
-                else if(originalTimeStampMillis >= shiftStopMillis && originalTimeStampMillis <= stopIntervalMillis){
+                else if(originalTimeStampMillis <= stopIntervalMillis && originalTimeStampMillis >= shiftStopMillis){
                     adjustedTimeStamp.setTimeInMillis(shiftStopMillis);
-                    eventdata = "Interval Round";
+                    eventdata = "Shift Stop";
                 }
                 //start of lunch
                 else if(originalTimeStampMillis >= lunchStartMillis && originalTimeStampMillis < lunchStopMillis){
@@ -162,7 +166,11 @@ public class Punch {
                 else if(originalTimeStampMillis < stopGraceMillis){
                     adjustedTimeStamp.setTimeInMillis(stopDockMillis);
                     eventdata = "Shift Dock";
-                }              
+                }  
+                else if(originalTimeStamp.get(Calendar.HOUR_OF_DAY) == shiftStop.get(Calendar.HOUR_OF_DAY) && originalTimeStamp.get(Calendar.MINUTE) == shiftStop.get(Calendar.MINUTE)){
+                    adjustedTimeStamp.setTimeInMillis(shiftStopMillis);
+                    eventdata = "None";
+                }
             }        
         }
     }
