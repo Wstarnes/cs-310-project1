@@ -97,6 +97,8 @@ public class Punch {
         lunchStop.set(Calendar.SECOND, 0);        
         long lunchStopMillis = lunchStop.getTimeInMillis();
         
+        int interval = s.getInterval;
+        
         //On a weekend
         if(shiftStart.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY || shiftStart.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY){
             //Check-in
@@ -106,7 +108,12 @@ public class Punch {
                     eventdata = "None";
                 }
                 else{
-                    adjustedTimeStamp.setTimeInMillis(shiftStartMillis);
+                    if(originalTimeStamp.get(Calendar.MINUTE) % interval >= interval / 2){
+                        adjustedTimeStamp.set(Calendar.MINUTE, originalTimeStamp.get(Calendar.MINUTE) + (interval % originalTimeStamp.get(Calendar.MINUTE)));
+                    }
+                    else{
+                        adjustedTimeStamp.set(Calendar.MINUTE, originalTimeStamp.get(Calendar.MINUTE) - (interval % originalTimeStamp.get(Calendar.MINUTE)));
+                    }
                     eventdata = "Interval Round";
                 }
             }
@@ -116,7 +123,12 @@ public class Punch {
                     eventdata = "None";
                 }
                 else{
-                    adjustedTimeStamp.setTimeInMillis(shiftStopMillis);
+                    if(originalTimeStamp.get(Calendar.MINUTE) % interval >= interval / 2){
+                        adjustedTimeStamp.set(Calendar.MINUTE, originalTimeStamp.get(Calendar.MINUTE) + (interval % originalTimeStamp.get(Calendar.MINUTE)));
+                    }
+                    else{
+                        adjustedTimeStamp.set(Calendar.MINUTE, originalTimeStamp.get(Calendar.MINUTE) - (interval % originalTimeStamp.get(Calendar.MINUTE)));
+                    }
                     eventdata = "Interval Round";
                 }
             }        
@@ -145,6 +157,15 @@ public class Punch {
                     adjustedTimeStamp.setTimeInMillis(shiftStartMillis);
                     eventdata = "None";
                 }
+                else{
+                    if(originalTimeStamp.get(Calendar.MINUTE) % interval >= interval / 2){
+                        adjustedTimeStamp.set(Calendar.MINUTE, originalTimeStamp.get(Calendar.MINUTE) + (interval % originalTimeStamp.get(Calendar.MINUTE)));
+                    }
+                    else{
+                        adjustedTimeStamp.set(Calendar.MINUTE, originalTimeStamp.get(Calendar.MINUTE) - (interval % originalTimeStamp.get(Calendar.MINUTE)));
+                    }
+                    eventdata = "Interval Round";
+                }
             }
             //check-out punches
             else if(punchtypeid == 0){
@@ -170,6 +191,15 @@ public class Punch {
                 else if(originalTimeStamp.get(Calendar.HOUR_OF_DAY) == shiftStop.get(Calendar.HOUR_OF_DAY) && originalTimeStamp.get(Calendar.MINUTE) == shiftStop.get(Calendar.MINUTE)){
                     adjustedTimeStamp.setTimeInMillis(shiftStopMillis);
                     eventdata = "None";
+                }
+                else{
+                    if(originalTimeStamp.get(Calendar.MINUTE) % interval >= interval / 2){
+                        adjustedTimeStamp.set(Calendar.MINUTE, originalTimeStamp.get(Calendar.MINUTE) + (interval % originalTimeStamp.get(Calendar.MINUTE)));
+                    }
+                    else{
+                        adjustedTimeStamp.set(Calendar.MINUTE, originalTimeStamp.get(Calendar.MINUTE) - (interval % originalTimeStamp.get(Calendar.MINUTE)));
+                    }
+                    eventdata = "Interval Round";
                 }
             }        
         }
