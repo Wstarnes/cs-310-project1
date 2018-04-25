@@ -7,12 +7,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-/*
-
-Contains information from the database about a single shift ruleset
-
-*/
-
 public class Shift {
     
     private String description;
@@ -127,17 +121,6 @@ public class Shift {
 
     public void setOver_time_threshold(String over_time_threshold) {
         this.over_time_threshold = over_time_threshold;
-    }
-    
-    //Calculate difference between times and returns in minutes
-    public long calculateDifference(String t1, String t2){
-        
-        DateTimeFormatter format = DateTimeFormatter.ofPattern("HH:mm:ss");
-        LocalTime time1 = LocalTime.parse(t1, format);
-        LocalTime time2 = LocalTime.parse(t2, format);
-        long minutes = ChronoUnit.MINUTES.between(time1, time2);
-        
-        return minutes;
     }
     
     @Override

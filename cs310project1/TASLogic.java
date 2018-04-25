@@ -23,6 +23,7 @@ public class TASLogic {
             punchData.put("eventtypeid", String.valueOf(punch.getPunchtypeid()));
             punchData.put("eventdata", String.valueOf(punch.getEventdata()));
             punchData.put("originaltimestamp", String.valueOf(punch.getOriginaltimestamp().getTimeInMillis()));
+            punchData.put("adjustedtimestamp", String.valueOf(punch.getAdjustedTimeStamp().getTimeInMillis()));
 
             /* Append HashMap to ArrayList */
             jsonData.add(punchData);            
@@ -45,6 +46,15 @@ public class TASLogic {
                 total_minutes += (punch_diff / 60000);
             }
         }
-        return total_minutes;
+        //Skipped lunch
+        if(dailypunchlist.size() == 2){
+            if(total_minutes > shift.getLunch_deduct())
+                return total_minutes - 30;
+            else
+                return total_minutes;
+        }
+        
+        else
+            return total_minutes;
     }
 }

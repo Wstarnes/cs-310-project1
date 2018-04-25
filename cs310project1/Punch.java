@@ -49,6 +49,8 @@ public class Punch {
         //Set all calanders to milliseconds
         long originalTimeStampMillis = originalTimeStamp.getTimeInMillis();
         
+        adjustedTimeStamp.setTimeInMillis(originalTimeStampMillis);
+        
         shiftStart.setTimeInMillis(originalTimeStampMillis);
         shiftStart.set(Calendar.HOUR_OF_DAY, s.getStart().get(Calendar.HOUR_OF_DAY));
         shiftStart.set(Calendar.MINUTE, s.getStart().get(Calendar.MINUTE));
@@ -97,37 +99,40 @@ public class Punch {
         lunchStop.set(Calendar.SECOND, 0);        
         long lunchStopMillis = lunchStop.getTimeInMillis();
         
-        int interval = s.getInterval;
+        int interval = s.getInterval();
+
         
         //On a weekend
         if(shiftStart.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY || shiftStart.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY){
             //Check-in
             if(punchtypeid == 1){
                 if(originalTimeStampMillis >= startIntervalMillis && originalTimeStampMillis <= shiftStartMillis + (s.getInterval() * 60000) ){
-                    adjustedTimeStamp.setTimeInMillis(originalTimeStampMillis);
                     eventdata = "None";
                 }
                 else{
-                    if(originalTimeStamp.get(Calendar.MINUTE) % interval >= interval / 2){
-                        adjustedTimeStamp.set(Calendar.MINUTE, originalTimeStamp.get(Calendar.MINUTE) + (interval % originalTimeStamp.get(Calendar.MINUTE)));
+                    if(originalTimeStamp.get(Calendar.MINUTE) % interval <= interval / 2){
+                        adjustedTimeStamp.set(Calendar.MINUTE, originalTimeStamp.get(Calendar.MINUTE) - (originalTimeStamp.get(Calendar.MINUTE) % interval));
+                        adjustedTimeStamp.set(Calendar.SECOND, 0);
                     }
                     else{
-                        adjustedTimeStamp.set(Calendar.MINUTE, originalTimeStamp.get(Calendar.MINUTE) - (interval % originalTimeStamp.get(Calendar.MINUTE)));
+                        adjustedTimeStamp.set(Calendar.MINUTE, originalTimeStamp.get(Calendar.MINUTE) + (interval - (originalTimeStamp.get(Calendar.MINUTE) % interval)));
+                        adjustedTimeStamp.set(Calendar.SECOND, 0);
                     }
                     eventdata = "Interval Round";
                 }
             }
             else if(punchtypeid == 0){
                 if(originalTimeStampMillis <= stopIntervalMillis && originalTimeStampMillis >= shiftStopMillis + (s.getInterval() * 60000)){
-                    adjustedTimeStamp.setTimeInMillis(originalTimeStampMillis);
                     eventdata = "None";
                 }
                 else{
                     if(originalTimeStamp.get(Calendar.MINUTE) % interval >= interval / 2){
-                        adjustedTimeStamp.set(Calendar.MINUTE, originalTimeStamp.get(Calendar.MINUTE) + (interval % originalTimeStamp.get(Calendar.MINUTE)));
+                        adjustedTimeStamp.set(Calendar.MINUTE, originalTimeStamp.get(Calendar.MINUTE) + (interval - (originalTimeStamp.get(Calendar.MINUTE) % interval)));
+                        adjustedTimeStamp.set(Calendar.SECOND, 0);
                     }
                     else{
-                        adjustedTimeStamp.set(Calendar.MINUTE, originalTimeStamp.get(Calendar.MINUTE) - (interval % originalTimeStamp.get(Calendar.MINUTE)));
+                        adjustedTimeStamp.set(Calendar.MINUTE, originalTimeStamp.get(Calendar.MINUTE) - (originalTimeStamp.get(Calendar.MINUTE) % interval));
+                        adjustedTimeStamp.set(Calendar.SECOND, 0);
                     }
                     eventdata = "Interval Round";
                 }
@@ -149,20 +154,21 @@ public class Punch {
                     adjustedTimeStamp.setTimeInMillis(lunchStopMillis);
                     eventdata = "Lunch Stop";
                 }
-                else if(originalTimeStampMillis > startGraceMillis){
+                else if(originalTimeStampMillis > startGraceMillis && originalTimeStamp.get(Calendar.MINUTE) % interval > interval/2){
                     adjustedTimeStamp.setTimeInMillis(startDockMillis);
                     eventdata = "Shift Dock";
                 }   
-                else if(originalTimeStamp.get(Calendar.HOUR_OF_DAY) == shiftStart.get(Calendar.HOUR_OF_DAY) && originalTimeStamp.get(Calendar.MINUTE) == shiftStart.get(Calendar.MINUTE)){
-                    adjustedTimeStamp.setTimeInMillis(shiftStartMillis);
+                else if(originalTimeStamp.get(Calendar.HOUR_OF_DAY) == shiftStart.get(Calendar.HOUR_OF_DAY) + 1 && originalTimeStamp.get(Calendar.MINUTE) == shiftStart.get(Calendar.MINUTE)){
                     eventdata = "None";
                 }
                 else{
-                    if(originalTimeStamp.get(Calendar.MINUTE) % interval >= interval / 2){
-                        adjustedTimeStamp.set(Calendar.MINUTE, originalTimeStamp.get(Calendar.MINUTE) + (interval % originalTimeStamp.get(Calendar.MINUTE)));
+                    if(originalTimeStamp.get(Calendar.MINUTE) % interval <= interval / 2){
+                        adjustedTimeStamp.set(Calendar.MINUTE, originalTimeStamp.get(Calendar.MINUTE) - (originalTimeStamp.get(Calendar.MINUTE) % interval));
+                        adjustedTimeStamp.set(Calendar.SECOND, 0);
                     }
                     else{
-                        adjustedTimeStamp.set(Calendar.MINUTE, originalTimeStamp.get(Calendar.MINUTE) - (interval % originalTimeStamp.get(Calendar.MINUTE)));
+                        adjustedTimeStamp.set(Calendar.MINUTE, originalTimeStamp.get(Calendar.MINUTE) + (originalTimeStamp.get(Calendar.MINUTE) % interval));
+                        adjustedTimeStamp.set(Calendar.SECOND, 0);
                     }
                     eventdata = "Interval Round";
                 }
@@ -184,20 +190,21 @@ public class Punch {
                     eventdata = "Lunch Start";
                 }
                 //check out is before grace period
-                else if(originalTimeStampMillis < stopGraceMillis){
+                else if(originalTimeStampMillis < stopGraceMillis && originalTimeStamp.get(Calendar.MINUTE) % interval < interval/2){
                     adjustedTimeStamp.setTimeInMillis(stopDockMillis);
                     eventdata = "Shift Dock";
-                }  
-                else if(originalTimeStamp.get(Calendar.HOUR_OF_DAY) == shiftStop.get(Calendar.HOUR_OF_DAY) && originalTimeStamp.get(Calendar.MINUTE) == shiftStop.get(Calendar.MINUTE)){
-                    adjustedTimeStamp.setTimeInMillis(shiftStopMillis);
+                } 
+                else if(originalTimeStamp.get(Calendar.HOUR_OF_DAY) == shiftStop.get(Calendar.HOUR_OF_DAY) + 1 && originalTimeStamp.get(Calendar.MINUTE) == shiftStop.get(Calendar.MINUTE)){
                     eventdata = "None";
                 }
                 else{
                     if(originalTimeStamp.get(Calendar.MINUTE) % interval >= interval / 2){
-                        adjustedTimeStamp.set(Calendar.MINUTE, originalTimeStamp.get(Calendar.MINUTE) + (interval % originalTimeStamp.get(Calendar.MINUTE)));
+                        adjustedTimeStamp.set(Calendar.MINUTE, originalTimeStamp.get(Calendar.MINUTE) + (originalTimeStamp.get(Calendar.MINUTE) % interval) + 1);
+                        adjustedTimeStamp.set(Calendar.SECOND, 0);
                     }
                     else{
-                        adjustedTimeStamp.set(Calendar.MINUTE, originalTimeStamp.get(Calendar.MINUTE) - (interval % originalTimeStamp.get(Calendar.MINUTE)));
+                        adjustedTimeStamp.set(Calendar.MINUTE, originalTimeStamp.get(Calendar.MINUTE) - (originalTimeStamp.get(Calendar.MINUTE) % interval));
+                        adjustedTimeStamp.set(Calendar.SECOND, 0);
                     }
                     eventdata = "Interval Round";
                 }

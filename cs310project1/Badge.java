@@ -1,11 +1,5 @@
 package cs310project1;
 
-/*
-
-Contains information from the database about a single employee badge
-
-*/
-
 public class Badge {
     
     private String badge_id;

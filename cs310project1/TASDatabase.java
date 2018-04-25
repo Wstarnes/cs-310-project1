@@ -67,25 +67,16 @@ public class TASDatabase {
                 
                 Date start = sdf.parse(result.getString("start"));
                 Date stop = sdf.parse(result.getString("stop"));
-
-                String start_hour = result.getString("start").substring(0,2);
-                String start_minute = result.getString("start").substring(3,5);
-                String stop_hour = result.getString("stop").substring(0,2);
-                String stop_minute = result.getString("stop").substring(3,5);
                 
                 int interval = Integer.parseInt(result.getString("interval"));
                 int grace_period = Integer.parseInt(result.getString("graceperiod"));
                 int dock = Integer.parseInt(result.getString("dock"));
                 Date lunch_start = sdf.parse(result.getString("lunchstart"));
                 Date lunch_stop = sdf.parse(result.getString("lunchstop"));
-                
-                String lunch_start_hour = result.getString("lunchstart").substring(0,2);
-                String lunch_start_minute = result.getString("lunchstart").substring(3,5);
-                String lunch_stop_hour = result.getString("lunchstop").substring(0,2);
-                String lunch_stop_minute = result.getString("lunchstop").substring(3,5);
-                
+                   
                 int lunch_deduct = Integer.parseInt(result.getString("lunchdeduct"));
 
+                
                 s.setDescription(desc);
                 s.setStart(start);
                 s.setStop(stop);
@@ -95,6 +86,7 @@ public class TASDatabase {
                 s.setLunch_start(lunch_start);
                 s.setLunch_stop(lunch_stop);
                 s.setLunch_deduct(lunch_deduct);
+
             }   
         } catch (Exception e) {
             System.err.println(e);
@@ -134,7 +126,6 @@ public class TASDatabase {
                 String badge_id = result.getString("badgeid");
                 long ts = Long.parseLong(result.getString("timestamp"));
                 String event_data = result.getString("eventdata");
-                //String adjusted_time_stamp = result.getString("adjustedtimestamp");
                 b = getBadge(badge_id);
                 Punch p = new Punch(b, term_id, event_id);
                 p.setEventdata(event_data);
@@ -241,5 +232,4 @@ public class TASDatabase {
         }
         return punches;
     } 
-    
 }
